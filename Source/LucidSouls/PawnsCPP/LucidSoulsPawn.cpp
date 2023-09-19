@@ -17,13 +17,13 @@ ALucidSoulsPawn::ALucidSoulsPawn(const FObjectInitializer& ObjectInitializer)
 
     if (Mesh)
         Mesh->SetupAttachment(RootCapsule);
-
-    MovementComponent = CreateDefaultSubobject<ULucidSoulsMovementComponent>("MovementComponent");
+    
+    MovementComponent = CreateDefaultSubobject<ULucidSoulsPawnMovementComponent>("MovementComponent");
     if (MovementComponent)
     {
         MovementComponent->UpdatedComponent = RootCapsule;
     }
-
+    
     CameraArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraAttachmentArm"));
     if (CameraArm)
     {

@@ -1,16 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-// This needs to inherit from PawnMovementComponent NOT CHARACTERMOVEMENTCOMPONENT
+
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "LucidSoulsMovementComponent.generated.h"
+#include "GameFramework/PawnMovementComponent.h"
+#include "LucidSoulsPawnMovementComponent.generated.h"
 
 /**
- *
+ * 
  */
 UCLASS()
-class LUCIDSOULS_API ULucidSoulsMovementComponent : public UCharacterMovementComponent
+class LUCIDSOULS_API ULucidSoulsPawnMovementComponent : public UPawnMovementComponent
 {
 	GENERATED_BODY()
 
@@ -30,4 +30,5 @@ protected:
 
 private:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 };

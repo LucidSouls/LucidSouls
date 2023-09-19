@@ -8,7 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "../MovementCPP/LucidSoulsMovementComponent.h"
+#include "../MovementCPP/LucidSoulsPawnMovementComponent.h"
 #include "LucidSoulsPawn.generated.h"
 
 UCLASS()
@@ -38,7 +38,7 @@ public:
 		TObjectPtr<UCameraComponent> Camera;
 
 private:
-	ULucidSoulsMovementComponent* MovementComponent;
+	ULucidSoulsPawnMovementComponent* MovementComponent;
 
 public:
 	// Called every frame
