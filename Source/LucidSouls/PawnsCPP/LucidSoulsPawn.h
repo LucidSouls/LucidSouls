@@ -48,5 +48,5 @@ public:
 	//virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void MoveTowards(FVector AbsoluteMovementDirection);
-
+	void Sprint();
 };

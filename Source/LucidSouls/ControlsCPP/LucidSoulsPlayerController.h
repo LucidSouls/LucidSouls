@@ -35,17 +35,21 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 		class UInputAction* IA_D;
 
-	UPROPERTY(EDITAnywhere, Category = "Input")
+	UPROPERTY(EditAnywhere, Category = "Input")
 		class UInputAction* IA_MOUSE_X;
 
-	UPROPERTY(EDITAnywhere, Category = "Input")
+	UPROPERTY(EditAnywhere, Category = "Input")
 		class UInputAction* IA_MOUSE_Y;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+		class UInputAction* IA_LSHIFT;
 
 protected:
 	class ALucidSoulsPawn* LucidSoulsPawn;
 
 	void TranslateMovementDirection(const FVector& AbsoluteMovementDirection);
 	void TranslateCameraMovement(const FVector& CameraLookDirection);
+	void TranslateSprint();
 
 	void ApplyMoveForward(const FInputActionInstance&);
 	void ApplyMoveRight(const FInputActionInstance&);
@@ -53,6 +57,7 @@ protected:
 	void ApplyMoveBack(const FInputActionInstance&);
 	void ApplyMoveMouseX(const FInputActionInstance&);
 	void ApplyMoveMouseY(const FInputActionInstance&);
+	void ApplySprint(const FInputActionInstance&);
 
 private:
 };

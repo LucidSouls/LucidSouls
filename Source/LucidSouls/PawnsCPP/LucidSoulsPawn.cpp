@@ -55,3 +55,9 @@ void ALucidSoulsPawn::MoveTowards(FVector AbsoluteMovementDirection)
     //AddMovementInput(AbsoluteMovementDirection);
     UE_LOG(LogTemp, Warning, TEXT("MoveTowards is called!"));
 }
+
+void ALucidSoulsPawn::Sprint() 
+{
+    //MovementComponent->Run();
+    UE_LOG(LogTemp, Warning, TEXT("Sprint is called!"));
+}

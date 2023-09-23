@@ -37,8 +37,12 @@ void ALucidSoulsPlayerController::SetupInputComponent()
 			InputManager->BindAction(IA_A, ETriggerEvent::Triggered, this, &ALucidSoulsPlayerController::ApplyMoveLeft);
 			InputManager->BindAction(IA_S, ETriggerEvent::Triggered, this, &ALucidSoulsPlayerController::ApplyMoveBack);
 
+			InputManager->BindAction(IA_LSHIFT, ETriggerEvent::Triggered, this, &ALucidSoulsPlayerController::ApplySprint);
+
 			InputManager->BindAction(IA_MOUSE_X, ETriggerEvent::Triggered, this, &ALucidSoulsPlayerController::ApplyMoveMouseX);
 			InputManager->BindAction(IA_MOUSE_Y, ETriggerEvent::Triggered, this, &ALucidSoulsPlayerController::ApplyMoveMouseY);
+
+
 		}
 	}
 }
@@ -58,6 +62,16 @@ void ALucidSoulsPlayerController::TranslateCameraMovement(const FVector& CameraL
 
 	}
 }
+
+void ALucidSoulsPlayerController::TranslateSprint()
+{
+	if (LucidSoulsPawn)
+	{
+		LucidSoulsPawn->Sprint();
+	}
+}
+
+
 
 void ALucidSoulsPlayerController::ApplyMoveForward(const FInputActionInstance& Instance)
 {
@@ -104,5 +118,13 @@ void ALucidSoulsPlayerController::ApplyMoveMouseY(const FInputActionInstance& In
 	if (LucidSoulsPawn)
 	{
 		this->TranslateCameraMovement(FVector(Instance.GetValue().GetMagnitude(), 0.f, 0.f));
+	}
+}
+
+void ALucidSoulsPlayerController::ApplySprint(const FInputActionInstance& Instance) 
+{
+	if (LucidSoulsPawn)
+	{
+		this->TranslateSprint();
 	}
 }
