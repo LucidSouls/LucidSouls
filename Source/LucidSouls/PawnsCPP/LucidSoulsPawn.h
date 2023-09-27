@@ -37,6 +37,23 @@ public:
 	UPROPERTY(EditAnywhere)
 		TObjectPtr<UCameraComponent> Camera;
 
+
+	// Health attribute
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pawn Attributes")
+		float Health;
+
+	// Stamina attribute
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pawn Attributes")
+		float Stamina;
+
+	// Function to decrease health
+	UFUNCTION(BlueprintCallable, Category = "Pawn Attributes")
+		void DecreaseHealth(float Amount);
+
+	// Function to decrease stamina
+	UFUNCTION(BlueprintCallable, Category = "Pawn Attributes")
+		void DecreaseStamina(float Amount);
+
 private:
 	ULucidSoulsPawnMovementComponent* MovementComponent;
 

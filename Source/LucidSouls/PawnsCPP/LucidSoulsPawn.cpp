@@ -7,6 +7,10 @@
 ALucidSoulsPawn::ALucidSoulsPawn(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
+    //Set default health and stamina
+    Health = 100.0f;
+    Stamina = 100.0f;
+
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
 
@@ -33,6 +37,17 @@ ALucidSoulsPawn::ALucidSoulsPawn(const FObjectInitializer& ObjectInitializer)
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("ActualCamera"));
     if (Camera)
         Camera->SetupAttachment(CameraArm, USpringArmComponent::SocketName);
+}
+
+void ALucidSoulsPawn::DecreaseHealth(float Amount)
+{
+    Health -= Amount;
+
+}
+
+void ALucidSoulsPawn::DecreaseStamina(float Amount)
+{
+    Stamina -= Amount;
 }
 
 // Called when the game starts or when spawned
