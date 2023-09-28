@@ -2,6 +2,9 @@
 
 
 #include "LucidSoulsPawn.h"
+#include "LucidSouls/MovementCPP/LucidSoulsPawnMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 
 // Sets default values
 ALucidSoulsPawn::ALucidSoulsPawn(const FObjectInitializer& ObjectInitializer)
@@ -58,6 +61,27 @@ void ALucidSoulsPawn::MoveTowards(FVector AbsoluteMovementDirection)
 
 void ALucidSoulsPawn::Sprint() 
 {
+    //MovementComponent->SetSprintSpeed
     //MovementComponent->Run();
     UE_LOG(LogTemp, Warning, TEXT("Sprint is called!"));
 }
+
+//void ALucidSoulsPawn::MoveForward(float Value)
+//{
+//    // Calculate the movement direction based on the camera view.
+//    FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X);
+//    AddMovementInput(Direction, Value);
+//}
+//
+//void ALucidSoulsPawn::MoveRight(float Value)
+//{
+//    // Calculate the right movement direction based on the camera view.
+//    FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y);
+//    AddMovementInput(Direction, Value);
+//}
+//
+//void ALucidSoulsPawn::MoveBackward(float Value)
+//{
+//    // Reverse the forward movement direction.
+//    MoveForward(-Value);
+//}

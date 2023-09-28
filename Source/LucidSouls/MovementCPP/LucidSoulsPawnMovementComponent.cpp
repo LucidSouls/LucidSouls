@@ -5,6 +5,7 @@
 
 void ULucidSoulsPawnMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+
 }
 
 void ULucidSoulsPawnMovementComponent::UpdateMovement(FVector InputVectorParam, float DeltaTime)
