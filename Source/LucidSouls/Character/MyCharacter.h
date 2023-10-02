@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "MyCharacter.generated.h"
 
+class USpringArmComponent;
+class UCameraComponent;
 UCLASS()
 class LUCIDSOULS_API AMyCharacter : public ACharacter
 {
@@ -14,6 +16,12 @@ class LUCIDSOULS_API AMyCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AMyCharacter();
+	
+	UPROPERTY(VisibleAnywhere)
+		TObjectPtr<USpringArmComponent> SpringArm;
+
+	UPROPERTY(VisibleAnywhere)
+		TObjectPtr<UCameraComponent> ActualCamera;
 
 protected:
 	// Called when the game starts or when spawned
@@ -25,5 +33,9 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void MoveTowards(float Value);
+	void MoveSide(float Value);
+	void LookUpAndDown(float Value);
+	void LookSide(float Value);
 
 };

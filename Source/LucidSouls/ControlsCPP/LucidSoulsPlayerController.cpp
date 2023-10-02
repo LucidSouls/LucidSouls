@@ -47,7 +47,7 @@ void ALucidSoulsPlayerController::TranslateMovementDirection(const FVector& Abso
 {
 	if (LucidSoulsPawn)
 	{
-		LucidSoulsPawn->MoveTowards(AbsoluteMovementDirection);
+		//LucidSoulsPawn->MoveTowards(AbsoluteMovementDirection);
 	}
 }
 

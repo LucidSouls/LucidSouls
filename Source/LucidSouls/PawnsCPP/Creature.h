@@ -8,6 +8,9 @@
 
 class UCapsuleComponent;
 class USkeletalMeshComponent;
+class USpringArmComponent;
+class UCameraComponent;
+
 UCLASS()
 class LUCIDSOULS_API ACreature : public APawn
 {
@@ -22,16 +25,32 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	void MoveTowards(float Value);
+	void LookUpAndDown(float Value);
+	void LookSide(float Value);
 
-private:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USpringArmComponent> SpringArm;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UCameraComponent> ActualCamera;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UCapsuleComponent> Capsule;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USkeletalMeshComponent> CreatureMesh;
+
+
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+//private:
+
+
+
 
 
 };
