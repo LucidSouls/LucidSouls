@@ -21,18 +21,24 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
-	float RunTime;
-	float Amplitude = 0.4f;
-	float TimeConstant = 4.0f;
+	float ElapsedTime;
 
-	UFUNCTION()
-	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	
+	// Declare a mesh for the item (appearance to be assigned in game with asset)
 	UPROPERTY(EditAnywhere, Category = "Item")
 	UStaticMeshComponent* ItemStaticMeshComponent;
-	
-	UPROPERTY(VisibleAnywhere)
+
+	// Declare a hit box surrounding the item for handling collision
+	UPROPERTY(EditAnywhere)
 	UBoxComponent* HitBox;
+
+	// Declare the function to handle overlap events (used for OnActorBeginOverlap)
+	UFUNCTION()
+	virtual void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	// Declare the function to handle end overlap
+	UFUNCTION()
+	virtual void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	
 
 public:	
 	// Called every frame

@@ -2,13 +2,18 @@
 
 #include "MyCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
+#include "Animation/AnimMontage.h"
+#include "../ItemCPP/Item.h"
+#include "../ItemCPP/WeaponCPP/Weapon.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	accelerate = 1.0f;
+
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 360.f, 0.f);
@@ -19,7 +24,7 @@ AMyCharacter::AMyCharacter()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -34,36 +39,31 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis(FName("MoveForward"), this, &AMyCharacter::MoveForward);
-	PlayerInputComponent->BindAxis(FName("MoveRight"), this, &AMyCharacter::MoveRight);
+	// Binding the movement functions to axis mapping inputs
+
+
+	PlayerInputComponent->BindAction(FName("Jump"), IE_Pressed, this, &AMyCharacter::Jump);
+	//PlayerInputComponent->BindAction(FName("Equip"), IE_Pressed, this, &AMyCharacter::Equip);
+
+	// Not working
+	PlayerInputComponent->BindAction(FName("Sprint"), IE_Pressed, this, &AMyCharacter::Sprint);
+	PlayerInputComponent->BindAction(FName("Jog"), IE_Released, this, &AMyCharacter::Jog);
+
+	PlayerInputComponent->BindAction(FName("EquipWeapon"), IE_Pressed, this, &AMyCharacter::EquipWeapon);
+	PlayerInputComponent->BindAction(FName("MeleeAttack"), IE_Pressed, this, &AMyCharacter::MeleeAttack);
+
 	PlayerInputComponent->BindAxis(FName("TurnXAxis"), this, &AMyCharacter::TurnXAxis);
 	PlayerInputComponent->BindAxis(FName("TurnYAxis"), this, &AMyCharacter::TurnYAxis);
+	PlayerInputComponent->BindAxis(FName("MoveForward"), this, &AMyCharacter::MoveForward);
+	PlayerInputComponent->BindAxis(FName("MoveRight"), this, &AMyCharacter::MoveRight);
+
 
 }
 
-void AMyCharacter::MoveForward(float value)
+void AMyCharacter::TurnYAxis(float value)
 {
-	if (Controller && (value != 0.f))
-	{
-		const FRotator ControllerRotation = GetControlRotation();
-		const FRotator YawRotation(0.f, ControllerRotation.Yaw, 0.f);
-		FVector ControllerDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(ControllerDirection, value);
-	}
-
+	AddControllerPitchInput(value);
 }
-
-void AMyCharacter::MoveRight(float value)
-{
-	if (Controller && (value != 0.f))
-	{
-		const FRotator ControllerRotation = GetControlRotation();
-		const FRotator YawRotation(0.f, ControllerRotation.Yaw, 0.f);
-		FVector ControllerDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		AddMovementInput(ControllerDirection, value);
-	}
-}
-
 
 
 void AMyCharacter::TurnXAxis(float value)
@@ -71,8 +71,106 @@ void AMyCharacter::TurnXAxis(float value)
 	AddControllerYawInput(value);
 }
 
-void AMyCharacter::TurnYAxis(float value)
+
+void AMyCharacter::MoveForward(float value)
 {
-	AddControllerPitchInput(value);
+	if (Controller && (value != 0.f))
+	{
+		// Get the controller's rotation
+		const FRotator ControllerRotation = GetControlRotation();
+
+		// Calculate the forward vector based on the controller's rotation (yaw)
+		const FVector ForwardVector = FRotationMatrix(ControllerRotation).GetUnitAxis(EAxis::X);
+
+		float valueWithAcc = value * accelerate;
+
+		// Add movement input in the forward direction
+		AddMovementInput(ForwardVector, value);
+		//if (GEngine)
+		//{
+		//	FString TestLog = FString::Printf(TEXT("ValueWithAcc: %f"), valueWithAcc);
+		//	GEngine->AddOnScreenDebugMessage(1, 30.0f, FColor::Cyan, TestLog);
+		//}
+
+	}
 }
+
+
+void AMyCharacter::MoveRight(float value)
+{
+	if (Controller && (value != 0.f))
+	{
+		// Get the controller's rotation
+		const FRotator ControllerRotation = GetControlRotation();
+
+		// Calculate the forward vector based on the controller's rotation (yaw)
+		const FVector ForwardVector = FRotationMatrix(ControllerRotation).GetUnitAxis(EAxis::X);
+
+		// Calculate the right vector by taking the cross product of the forward vector and the up vector (WorldUpVector)
+		const FVector RightVector = FVector::CrossProduct(ForwardVector, FVector::UpVector);
+
+		float valueWithAcc = - value * accelerate;
+
+		// Add movement input in the right direction
+		AddMovementInput(RightVector, -value);
+		
+		//if (GEngine)
+		//{
+		//	FString TestLog = FString::Printf(TEXT("ValueWithAcc: %f"), valueWithAcc);
+		//	GEngine->AddOnScreenDebugMessage(1, 30.0f, FColor::Cyan,TestLog);
+		//}
+	}
+}
+
+void AMyCharacter::Sprint()
+{
+	accelerate = 4.0f;
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 30.0f, FColor::Green, "Sprinting");
+	}
+}
+
+void AMyCharacter::Jog()
+{
+	accelerate = 1.0f;
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 30.0f, FColor::Cyan, "Jogging");
+	}
+}
+
+//void AMyCharacter::SetOverlappingItem(AItem* Item)
+//{
+//	OverlappingItem = Item;
+//}
+
+void AMyCharacter::SetOverlappingItem(AItem* Item)
+{
+	OverlappingItem = Item;
+}
+
+void AMyCharacter::EquipWeapon()
+{
+	AWeapon* EquippingWeapon = Cast<AWeapon>(OverlappingItem);
+	if (OverlappingItem) {
+		EquippingWeapon->AttachToCharacter(GetMesh(), FName("SwordSocket"));
+	}
+}
+
+void AMyCharacter::MeleeAttack()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && MeleeAttackMontage) {
+		AnimInstance->Montage_Play(MeleeAttackMontage);
+		AnimInstance->Montage_JumpToSection(FName("Attack1"), MeleeAttackMontage);
+	}
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 30.0f, FColor::Cyan, "attacking");
+	}
+}
+
+
+
 
