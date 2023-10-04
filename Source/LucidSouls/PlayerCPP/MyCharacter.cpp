@@ -152,25 +152,45 @@ void AMyCharacter::SetOverlappingItem(AItem* Item)
 
 void AMyCharacter::EquipWeapon()
 {
-	AWeapon* EquippingWeapon = Cast<AWeapon>(OverlappingItem);
+	// Check if there is an overlapping item
 	if (OverlappingItem) {
-		EquippingWeapon->AttachToCharacter(GetMesh(), FName("SwordSocket"));
+		// Attempt to cast the overlapping item to a weapon
+		AWeapon* EquippingWeapon = Cast<AWeapon>(OverlappingItem);
+
+		// If the cast is successful and we have a valid weapon, attach it to the character's mesh
+		if (EquippingWeapon) {
+			EquippingWeapon->AttachToCharacter(GetMesh(), FName("SwordSocket"));
+		}
 	}
 }
 
 void AMyCharacter::MeleeAttack()
 {
+	// Get the character's animation instance
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	// Check if we have a valid animation instance and a valid melee attack montage
 	if (AnimInstance && MeleeAttackMontage) {
+		
+		// Delay before playing the melee attack montage
+		//const float DelayBeforeAttack = 0.5f;
+		//FTimerHandle UnusedHandle;
+		//GetWorld()->GetTimerManager().SetTimer(UnusedHandle, [this, AnimInstance]() {
+		//	// Play the melee attack montage
+		//	AnimInstance->Montage_Play(MeleeAttackMontage);
+
+		//	// Jump to the specified section within the montage
+		//	AnimInstance->Montage_JumpToSection(FName("Attack1"), MeleeAttackMontage);
+		//	}, DelayBeforeAttack, false);
+
 		AnimInstance->Montage_Play(MeleeAttackMontage);
-		AnimInstance->Montage_JumpToSection(FName("Attack1"), MeleeAttackMontage);
+
+		AnimInstance->Montage_JumpToSection(FName("Melee1"), MeleeAttackMontage);
 	}
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(1, 30.0f, FColor::Cyan, "attacking");
+
+	// Display a debug message if the GEngine is available
+	if (GEngine) {
+		GEngine->AddOnScreenDebugMessage(1, 30.0f, FColor::Cyan, "Melee Attack");
 	}
 }
-
-
-
 

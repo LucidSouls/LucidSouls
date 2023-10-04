@@ -39,8 +39,17 @@ void AWeapon::Tick(float DeltaTime)
 }
 
 void AWeapon::AttachToCharacter(USceneComponent* CharacterMesh, FName SocketInCharacterMeshName) {
-	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-	ItemStaticMeshComponent->AttachToComponent(CharacterMesh, TransformRules, SocketInCharacterMeshName);
+	FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget, true);
+
+	// Attach the ItemStaticMeshComponent to the CharacterMesh at the specified socket
+	ItemStaticMeshComponent->AttachToComponent(CharacterMesh, AttachRules, SocketInCharacterMeshName);
+
+	// Mark the weapon as attached
 	isAttached = true;
+
+	// Optionally, add a debug message to indicate attachment
+	if (GEngine) {
+		GEngine->AddOnScreenDebugMessage(2, 5.0f, FColor::Green, "Weapon Attached to Character");
+	}
 }
 

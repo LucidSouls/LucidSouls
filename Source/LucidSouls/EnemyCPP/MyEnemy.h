@@ -4,10 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "../Interfaces/OnHitInterface.h"
 #include "MyEnemy.generated.h"
 
+class UAnimMontage;
+
+
 UCLASS()
-class LUCIDSOULS_API AMyEnemy : public ACharacter
+class LUCIDSOULS_API AMyEnemy : public ACharacter, public IOnHitInterface
 {
 	GENERATED_BODY()
 
@@ -26,4 +30,11 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void GetHit(const FVector& ImpactPoint) override;
+
+	// Combat
+	UPROPERTY(EditAnywhere, Category = Montages)
+		UAnimMontage* OnHitMontage; // Enemy on hit animation montage to be play
+
+	void OnHit();
 };
