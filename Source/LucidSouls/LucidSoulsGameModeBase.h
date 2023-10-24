@@ -13,5 +13,5 @@ UCLASS()
 class LUCIDSOULS_API ALucidSoulsGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
 };

@@ -6,8 +6,11 @@
 #include "GameFramework/Character.h"
 #include "MyCharacter.generated.h"
 
+class AItem;
 class USpringArmComponent;
 class UCameraComponent;
+class UAnimMontage;
+class ALucidSoulsGameModeBase;
 UCLASS()
 class LUCIDSOULS_API AMyCharacter : public ACharacter
 {
@@ -20,13 +23,26 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		TObjectPtr<USpringArmComponent> SpringArm;
 
+
 	UPROPERTY(VisibleAnywhere)
 		TObjectPtr<UCameraComponent> ActualCamera;
+
+	UPROPERTY(EditDefaultsOnly, Category = Montage)
+		TObjectPtr<UAnimMontage> Attacks;
+
+	UPROPERTY(VisibleInstanceOnly)
+		TObjectPtr<AItem> ItemOverlap;
+
+	UFUNCTION(BlueprintCallable)
+	void ItemCollisionEnable(ECollisionEnabled::Type CollisionEnabled);
+
+	UFUNCTION(BlueprintCallable)
+	void ItemCollisionDisable();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -37,5 +53,9 @@ public:
 	void MoveSide(float Value);
 	void LookUpAndDown(float Value);
 	void LookSide(float Value);
-
+	void Attack();
+	void AttachItem();
+	void StartAttacks();
+	void SetItemOverlap(AItem* Item) { ItemOverlap = Item; };
+	void Transform();
 };

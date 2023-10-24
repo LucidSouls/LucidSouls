@@ -5,6 +5,14 @@
 #include "GameFrameWork/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Animation/AnimMontage.h"
+#include "LucidSouls/Items/Item.h"
+#include "Components/BoxComponent.h"
+#include "Components/InputComponent.h"
+#include "Animation/AnimInstance.h"
+#include "Kismet/GameplayStatics.h"
+#include "LucidSouls/LucidSoulsGameModeBase.h"
+#include "LucidSouls/PawnsCPP/Creature.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -17,7 +25,7 @@ AMyCharacter::AMyCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement= true;
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
-	SpringArm->TargetArmLength = 2000.f;
+	SpringArm->TargetArmLength = 100.f;
 	SpringArm->bUsePawnControlRotation = true;
 	ActualCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ActualCamera"));
 	ActualCamera->SetupAttachment(SpringArm);
@@ -25,10 +33,30 @@ AMyCharacter::AMyCharacter()
 
 }
 
+void AMyCharacter::ItemCollisionEnable(ECollisionEnabled::Type CollisionEnabled)
+{
+	if (ItemOverlap != NULL && ItemOverlap->GetCollisionBox())
+	{
+		ItemOverlap->GetCollisionBox()->SetCollisionEnabled(CollisionEnabled);
+	}
+}
+
+void AMyCharacter::ItemCollisionDisable()
+{
+}
+
 // Called when the game starts or when spawned
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+}
+
+
+
+void AMyCharacter::Attack()
+{
+	StartAttacks();
 
 }
 
@@ -48,6 +76,9 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis(FName("LookUpAndDown"), this, &AMyCharacter::LookUpAndDown);
 	PlayerInputComponent->BindAxis(FName("LookSide"), this, &AMyCharacter::LookSide);
 	PlayerInputComponent->BindAction(FName("Jump"), IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction(FName("Attack"), IE_Pressed, this, &AMyCharacter::Attack);
+	PlayerInputComponent->BindAction(FName("AttachDeattach"), IE_Pressed, this, &AMyCharacter::AttachItem);
+	PlayerInputComponent->BindAction(FName("Transform"), IE_Pressed, this, &AMyCharacter::Transform);
 }
 
 void AMyCharacter::MoveTowards(float Value)
@@ -79,3 +110,48 @@ void AMyCharacter::LookSide(float Value)
 	AddControllerYawInput(Value);
 }
 
+void AMyCharacter::AttachItem() 
+{
+	if (ItemOverlap)
+	{
+		ItemOverlap->EquipItem(GetMesh(), FName("HandSocket"),this,this);
+
+	}
+}
+
+
+
+void AMyCharacter::StartAttacks()
+{
+	//Create a pointer to AnimInstance component of the Mesh
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (AnimInstance && Attacks)
+	{
+		//Check animation duration
+		FString DebugMessage = FString::Printf(TEXT("Attack montage duration: %f"), (AnimInstance->Montage_Play(Attacks)));
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(1, 2.0f, FColor::Blue, DebugMessage);
+		}
+		
+		//Randomize selection for attacks
+		int32 Select = FMath::RandRange(1, 2);
+		
+		FName Section = FName(FString::FromInt(Select));
+		
+		//Play the montage
+		AnimInstance->Montage_Play(Attacks);
+		AnimInstance->Montage_JumpToSection(Section, Attacks);
+	}
+}
+
+void AMyCharacter::Transform()
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 2.0f, FColor::Green, "called base game");
+	}
+	GetWorld()->GetAuthGameMode()->DefaultPawnClass = ACreature::StaticClass();
+	//ALucidSoulsGameModeBase GameMode = Cast<ALucidSoulsGameModeBase>(UGameplayStatics::GetGameMode);
+}

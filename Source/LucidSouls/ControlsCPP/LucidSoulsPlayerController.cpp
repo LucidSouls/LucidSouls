@@ -10,7 +10,7 @@ void ALucidSoulsPlayerController::BeginPlay()
 	Super::BeginPlay();
 	this->LucidSoulsPawn = Cast<ALucidSoulsPawn>(GetPawn());
 
-	if (Player)
+	/*if (Player)
 	{
 		if (ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(Player))
 		{
@@ -22,7 +22,7 @@ void ALucidSoulsPlayerController::BeginPlay()
 				}
 			}
 		}
-	}
+	}*/
 }
 
 void ALucidSoulsPlayerController::SetupInputComponent()
