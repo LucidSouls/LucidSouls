@@ -1,7 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "MyNPC.h"
+
 #include "MyCharacter.h"
+
 #include "GameFrameWork/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -13,19 +16,22 @@
 #include "Kismet/GameplayStatics.h"
 #include "LucidSouls/LucidSoulsGameModeBase.h"
 #include "LucidSouls/PawnsCPP/Creature.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationPitch = false;
+	PowerUp = false;
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	GetCharacterMovement()->bOrientRotationToMovement= true;
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
-	SpringArm->TargetArmLength = 100.f;
+	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
+	SpringArm->TargetArmLength = 500.f;
 	SpringArm->bUsePawnControlRotation = true;
 	ActualCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ActualCamera"));
 	ActualCamera->SetupAttachment(SpringArm);
@@ -43,6 +49,80 @@ void AMyCharacter::ItemCollisionEnable(ECollisionEnabled::Type CollisionEnabled)
 
 void AMyCharacter::ItemCollisionDisable()
 {
+}
+
+void AMyCharacter::GrabItem()
+{
+	
+	if (PowerUp) {
+		//result
+		FHitResult HitResult;
+
+		// start location is at player camera (will be converted to fps) and end location 
+		// end location is 2000cm straight from start
+		FVector Start = ActualCamera->GetComponentLocation();
+		FVector End = (ActualCamera->GetComponentRotation()).Vector() * 2000.0f + Start;
+
+		// Add player to ignoreed actors for collision query param
+		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(this);
+
+		//Create a line trace and returns the first hit actor which belongs to the specified collision channel (ECC_Visibility)
+		GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams);
+
+		// if line tracing hit something, bBlockingHit from the hit result will be true
+		if (HitResult.bBlockingHit)
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(1, 2.0f, FColor::Cyan, *HitResult.GetActor()->GetName());
+			}
+			HitResult.GetComponent()->SetSimulatePhysics(true);
+
+			//Grab component
+			PhysicsHandle->GrabComponentAtLocationWithRotation(HitResult.GetComponent(), NAME_None, HitResult.Location,
+				HitResult.GetComponent()->GetComponentRotation());
+
+			ItemGrabbing = true;
+		}
+		else {
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(1, 2.0f, FColor::Red, TEXT("0 hit actor"));
+			}
+		}
+	}
+}
+
+void AMyCharacter::ReleaseItem()
+{
+	if (PowerUp) {
+		if (ItemGrabbing) {
+			//Release component
+			PhysicsHandle->ReleaseComponent();
+			ItemGrabbing = false;
+		}
+	}
+}
+
+void AMyCharacter::Talk()
+{
+	TArray<TObjectPtr<AActor>> OverlappingActors;
+	GetOverlappingActors(OverlappingActors, AMyNPC::StaticClass()); 
+
+	for (AActor* Actor : OverlappingActors)
+	{
+		
+		if (Actor->GetClass()->ImplementsInterface(UNPCInteract::StaticClass()))
+		{
+			INPCInteract* NPCInterface = Cast<INPCInteract>(Actor);
+			if (NPCInterface)
+			{
+				NPCInterface->Talk();
+			}
+		}
+	}
+
 }
 
 // Called when the game starts or when spawned
@@ -64,6 +144,13 @@ void AMyCharacter::Attack()
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (ItemGrabbing)
+	{	
+		//Update item location when being dragged around
+		FVector Start = ActualCamera->GetComponentLocation();
+		FVector End = (ActualCamera->GetComponentRotation()).Vector() * 2000.0f + Start;
+		PhysicsHandle->SetTargetLocation(End);
+	}
 
 }
 
@@ -79,6 +166,11 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(FName("Attack"), IE_Pressed, this, &AMyCharacter::Attack);
 	PlayerInputComponent->BindAction(FName("AttachDeattach"), IE_Pressed, this, &AMyCharacter::AttachItem);
 	PlayerInputComponent->BindAction(FName("Transform"), IE_Pressed, this, &AMyCharacter::Transform);
+	PlayerInputComponent->BindAction(FName("Move"), IE_Pressed, this, &AMyCharacter::GrabItem);
+	PlayerInputComponent->BindAction(FName("Move"), IE_Released, this, &AMyCharacter::ReleaseItem);
+	//PlayerInputComponent->BindKey(EKeys::T, IE_Pressed, this, &AMyCharacter::Talk);
+
+
 }
 
 void AMyCharacter::MoveTowards(float Value)
@@ -155,3 +247,4 @@ void AMyCharacter::Transform()
 	GetWorld()->GetAuthGameMode()->DefaultPawnClass = ACreature::StaticClass();
 	//ALucidSoulsGameModeBase GameMode = Cast<ALucidSoulsGameModeBase>(UGameplayStatics::GetGameMode);
 }
+

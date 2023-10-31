@@ -58,12 +58,14 @@ void APuzzleSquare::OnStartOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 
 	//Assign a pointer to the overlapped actor which was casted into MyCharacter type 
 	AMyCharacter* MyCharacter = Cast<AMyCharacter>(OtherActor);
-	if (MyCharacter && TargetSquares.Num()>0)
+	if (MyCharacter)
 	{
 		IsOn = !IsOn;
-		for (TObjectPtr<APuzzleSquare>& square : TargetSquares)
-		{
-			square->IsOn = !(square->IsOn);
+		if (TargetSquares.Num() > 0) {
+			for (TObjectPtr<APuzzleSquare>& square : TargetSquares)
+			{
+				square->IsOn = !(square->IsOn);
+			}
 		}
 	}
 }

@@ -11,6 +11,8 @@ class USpringArmComponent;
 class UCameraComponent;
 class UAnimMontage;
 class ALucidSoulsGameModeBase;
+class UPhysicsHandleComponent;
+
 UCLASS()
 class LUCIDSOULS_API AMyCharacter : public ACharacter
 {
@@ -27,17 +29,35 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		TObjectPtr<UCameraComponent> ActualCamera;
 
+	UPROPERTY(VisibleAnywhere)
+		bool ItemGrabbing;
+
+	UPROPERTY(BlueprintReadWrite)
+		bool PowerUp;
+
 	UPROPERTY(EditDefaultsOnly, Category = Montage)
 		TObjectPtr<UAnimMontage> Attacks;
 
 	UPROPERTY(VisibleInstanceOnly)
 		TObjectPtr<AItem> ItemOverlap;
+	UPROPERTY(VisibleAnywhere)
+		TObjectPtr<UPhysicsHandleComponent> PhysicsHandle;
+	
 
 	UFUNCTION(BlueprintCallable)
 	void ItemCollisionEnable(ECollisionEnabled::Type CollisionEnabled);
 
 	UFUNCTION(BlueprintCallable)
 	void ItemCollisionDisable();
+
+	UFUNCTION(BlueprintCallable)
+		void GrabItem();
+
+	UFUNCTION(BlueprintCallable)
+		void ReleaseItem();
+
+	UFUNCTION(BlueprintCallable)
+		void Talk();
 
 protected:
 	// Called when the game starts or when spawned
@@ -46,7 +66,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void MoveTowards(float Value);
