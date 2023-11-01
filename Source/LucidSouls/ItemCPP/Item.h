@@ -24,7 +24,7 @@ protected:
 	float ElapsedTime;
 
 	// Declare a mesh for the item (appearance to be assigned in game with asset)
-	UPROPERTY(EditAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* ItemStaticMeshComponent;
 
 	// Declare a hit box surrounding the item for handling collision

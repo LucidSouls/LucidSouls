@@ -6,6 +6,7 @@
 #include "../Item.h"
 #include "Weapon.generated.h"
 
+class UBoxComponent;
 /**
  * 
  */
@@ -20,17 +21,40 @@ public:
 
 protected:
 
+	virtual void BeginPlay() override;
+
 	virtual void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	
 	virtual void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 
+	UFUNCTION()
+	void WeaponHitBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 	bool isAttached;
+
 
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime);
 
-	void AttachToCharacter(USceneComponent* CharacterMesh, FName SocketInCharacterMeshName);
+	void AttachToCharacter(USceneComponent* CharacterMesh, FName SocketInCharacterMeshName, AActor* NewOwner, APawn* NewInstigator);
+
+	void AttachMeshToPlayerSocket(USceneComponent* CharacterMesh, const FName& SocketInCharacterMeshName);
+
+	UPROPERTY(EditAnywhere)
+	float Damage = 30.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UBoxComponent* WHitBox;
+
+	UPROPERTY(EditAnywhere)
+	USceneComponent* HitBoxStartPoint;
+
+	UPROPERTY(EditAnywhere)
+	USceneComponent* HitBoxEndPoint;
+
+	TArray<AActor*> ActorsToAvoid;
+
 
 };
 
