@@ -5,6 +5,9 @@
 #include "NPCInteract.h"
 #include "LucidSouls/HUD/DialogueWidgetBP.h"
 #include <Kismet/GameplayStatics.h>
+#include "GameFramework/PlayerController.h"
+#include "Sound/SoundBase.h"
+
 
 // Sets default values
 AMyNPC::AMyNPC()
@@ -56,5 +59,20 @@ void AMyNPC::Talk()
 		}
 	}
 
+}
+
+void AMyNPC::ChangeLevel()
+{
+	if (LevelName.Len()>0) {
+		UGameplayStatics::OpenLevel(this, FName(LevelName));
+	}
+}
+
+
+void AMyNPC::PlaySound()
+{
+	if (Soundtrack) {
+		UGameplayStatics::PlaySound2D(this, Soundtrack);
+	}
 }
 

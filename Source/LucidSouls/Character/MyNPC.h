@@ -8,6 +8,7 @@
 #include "MyNPC.generated.h"
 
 class UDialogueWidgetBP;
+class USoundBase;
 UCLASS()
 class LUCIDSOULS_API AMyNPC : public ACharacter, public INPCInteract
 {
@@ -21,8 +22,12 @@ public:
 		TArray<FString> Dialogue;
 	UPROPERTY(EditAnywhere)
 		TObjectPtr<UDialogueWidgetBP> DialogueWidget;
+	UPROPERTY(BlueprintReadWrite)
+		TObjectPtr<USoundBase> Soundtrack;
 	UPROPERTY(EditAnywhere)
 		int Index;
+	UPROPERTY(BlueprintReadWrite)
+		FString LevelName;
 
 protected:
 	// Called when the game starts or when spawned
@@ -37,5 +42,11 @@ public:
 
 	UFUNCTION()
 	virtual void Talk() override;
+
+	UFUNCTION(Blueprintcallable)
+		void ChangeLevel();
+
+	UFUNCTION(BlueprintCallable)
+		void PlaySound();
 
 };
