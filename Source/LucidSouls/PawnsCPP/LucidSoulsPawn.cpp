@@ -80,6 +80,7 @@ void CharacterAnim::BlendAnimations(UAnimMontage* BaseMontage, UAnimMontage* Ove
     }
 }
 
+// Animation and montage function for Jump animation
 void CharacterAnim::JumpToAnimationSection(FName JumpMont, UAnimMontage* Montage) {
     UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
     if (AnimInstance && Montage) {
