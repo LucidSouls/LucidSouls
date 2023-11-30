@@ -4,6 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "../ItemCPP/Item.h"
+<<<<<<< Updated upstream
+=======
+#include "../Interfaces/OnHitInterface.h"
+#include "../ItemCPP/WeaponCPP/Weapon.h"
+#include "MyCharacterStates.h"
+>>>>>>> Stashed changes
 #include "GameFramework/Character.h"
 #include "MyCharacter.generated.h"
 
