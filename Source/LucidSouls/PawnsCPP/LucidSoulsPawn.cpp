@@ -80,11 +80,11 @@ void CharacterAnim::BlendAnimations(UAnimMontage* BaseMontage, UAnimMontage* Ove
     }
 }
 
-void CharacterAnim::JumpToAnimationSection(FName SectionName, UAnimMontage* Montage) {
+void CharacterAnim::JumpToAnimationSection(FName JumpMont, UAnimMontage* Montage) {
     UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
     if (AnimInstance && Montage) {
         AnimInstance->Montage_Play(Montage);
-        AnimInstance->Montage_JumpToSection(SectionName, EAnimPlayMode::Stop);
+        AnimInstance->Montage_JumpToSection(JumpMont, EAnimPlayMode::Stop);
         // Improve the logic for more precise section jumps
     }
 }
