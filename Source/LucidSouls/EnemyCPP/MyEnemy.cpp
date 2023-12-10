@@ -102,6 +102,7 @@ void AMyEnemy::Tick(float DeltaTime)
 	if (EnemyState > EEnemyState::State_UnoccupiedPatrol) {
 		if (EnemyCTarget) {
 			const double DistanceToTarget = (EnemyCTarget->GetActorLocation() - GetActorLocation()).Size();
+			// 1st case when combat target is outside of combat radius
 			if (!IsInRange(EnemyCTarget, EnemyCRadius)) {
 				EnemyState = EEnemyState::State_UnoccupiedPatrol;
 
@@ -115,6 +116,7 @@ void AMyEnemy::Tick(float DeltaTime)
 
 				UE_LOG(LogTemp, Warning, TEXT("Luchador lost interest. NOT CHASING"));
 			}
+			// 2nd case when combat target is inside of combat radius but outside of attack radius
 			else if (!IsInRange(EnemyCTarget, EnemyARadius) && EnemyState != EEnemyState::State_FollowPlayer) {
 				EnemyState = EEnemyState::State_FollowPlayer;
 				GetWorldTimerManager().ClearTimer(EnemyATime);
@@ -122,8 +124,9 @@ void AMyEnemy::Tick(float DeltaTime)
 				GetCharacterMovement()->MaxWalkSpeed = 300.f;
 				UE_LOG(LogTemp, Warning, TEXT("Luchador chasing"));
 			}
+			// 3rd case when combat target is inside of attack radius
 			else if (IsInRange(EnemyCTarget, EnemyARadius) && EnemyState != EEnemyState::State_Attacking ) {
-				if (isDead == false) {
+				if (!isDead) {
 					EnemyState = EEnemyState::State_Attacking;
 					GetWorldTimerManager().ClearTimer(EnemyATime);				
 					GetWorldTimerManager().SetTimer(EnemyATime, this, &AMyEnemy::MeleeAttack, 0.5f);
@@ -136,8 +139,8 @@ void AMyEnemy::Tick(float DeltaTime)
 	}
 	else {
 		// Need refactor
-		if (EnemyPTarget) {
-			if (IsInRange(EnemyPTarget, EnemyPRadius)) {
+		if (EnemyPTarget) { 
+			if (IsInRange(EnemyPTarget, EnemyPRadius)) { 
 
 				TArray<AActor*> EnemyValidPTargets;
 				for (auto Target : EnemyPTargets) {
@@ -146,17 +149,23 @@ void AMyEnemy::Tick(float DeltaTime)
 					}
 				}
 
-				const int32 EnemyPTargetsTotal = EnemyPTargets.Num();
+				/*const int32 EnemyPTargetsTotal = EnemyPTargets.Num();
 				if (EnemyPTargetsTotal > 0) {
 					const int32 PTargetSelectedIndex = FMath::RandRange(0, EnemyPTargetsTotal - 1);
-
 					if (PTargetSelectedIndex >= 0 && PTargetSelectedIndex < EnemyValidPTargets.Num()) {
 						AActor* Target = EnemyValidPTargets[PTargetSelectedIndex];
 						EnemyPTarget = Target;
-
 						GetWorldTimerManager().SetTimer(EnemyPTime, this, &AMyEnemy::EnemyPTimeEvent, 3.f);
 					}
+				}*/
 
+				if (EnemyValidPTargets.Num() > 0) {
+					const int32 EnemyPTargetIndex = FMath::RandRange(0, EnemyValidPTargets.Num() - 1);
+
+					AActor* Target = EnemyValidPTargets[EnemyPTargetIndex];
+					EnemyPTarget = Target;
+
+					GetWorldTimerManager().SetTimer(EnemyPTime, this, &AMyEnemy::EnemyPTimeEvent, 3.f);
 				}
 
 			}
@@ -257,8 +266,6 @@ float AMyEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 	EnemyMove(EnemyCTarget);
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	return DamageAmount;
-
-	//return 0.0f;
 }
 
 void AMyEnemy::Destroyed()
